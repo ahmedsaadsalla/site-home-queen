@@ -1,0 +1,44 @@
+{
+  "name": "site-home-queen",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "prisma generate && next build",
+    "start": "next start",
+    "lint": "next lint",
+    "postinstall": "prisma generate",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:migrate:deploy": "prisma migrate deploy",
+    "db:studio": "prisma studio",
+    "db:import": "tsx scripts/import-from-json.ts",
+    "db:export": "tsx scripts/export-backup.ts",
+    "db:docker": "docker compose up -d",
+    "db:backup": "tsx scripts/export-backup.ts"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.19.2",
+    "bcryptjs": "^3.0.3",
+    "framer-motion": "^12.43.0",
+    "next": "^16.2.12",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "sharp": "^0.35.3"
+  },
+  "devDependencies": {
+    "@tailwindcss/node": "^4.3.3",
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/node": "^26.1.2",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "dotenv": "^17.4.2",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^16.2.12",
+    "prisma": "^6.19.2",
+    "tailwindcss": "^4.3.3",
+    "tsx": "^4.23.5",
+    "typescript": "^6.0.3"
+  }
+}

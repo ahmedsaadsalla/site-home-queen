@@ -1,0 +1,628 @@
+// Home Queen — fonte oficial de dados (PostgreSQL via Prisma)
+// Arquivos JSON em data/ servem apenas para import/export de emergência.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Auth admin ───────────────────────────────────────────────
+
+model AdminUser {
+  id           String    @id @default(cuid())
+  name         String
+  username     String    @unique
+  email        String    @unique
+  passwordHash String
+  role         String    @default("Atendimento")
+  active       Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  lastLoginAt  DateTime?
+
+  sessions    AdminSession[]
+  resetTokens PasswordResetToken[]
+  logs        AdminLog[]           @relation("LogActor")
+
+  @@index([active])
+  @@map("admin_users")
+}
+
+model AdminSession {
+  id             String   @id
+  userId         String
+  username       String
+  name           String
+  role           String
+  ip             String?
+  userAgent      String?
+  createdAt      DateTime @default(now())
+  lastActivityAt DateTime @default(now())
+
+  user AdminUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([lastActivityAt])
+  @@map("admin_sessions")
+}
+
+model LoginAttempt {
+  id          String    @id @default(cuid())
+  key         String    @unique
+  count       Int       @default(0)
+  lockedUntil DateTime?
+  updatedAt   DateTime  @updatedAt
+
+  @@map("login_attempts")
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user AdminUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("password_reset_tokens")
+}
+
+model AdminLog {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  user      String
+  action    String
+  detail    String
+  ip        String?
+  userAgent String?
+  actorId   String?
+
+  actor AdminUser? @relation("LogActor", fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+  @@index([action])
+  @@index([user])
+  @@map("admin_logs")
+}
+
+model SecuritySettings {
+  id            Int       @id @default(1)
+  lastBackupAt  DateTime?
+  lastResetLink String?
+  updatedAt     DateTime  @updatedAt
+
+  @@map("security_settings")
+}
+
+// ─── Catálogo ─────────────────────────────────────────────────
+
+model Category {
+  id             String    @id
+  name           String
+  slug           String    @unique
+  banner         String    @default("")
+  icon           String    @default("")
+  image          String    @default("")
+  order          Int       @default(0)
+  parentId       String?
+  description    String    @default("")
+  seoTitle       String    @default("")
+  seoDescription String    @default("")
+  seoKeywords    String    @default("")
+  ogImage        String    @default("")
+  indexable      Boolean   @default(true)
+  minQty         Int       @default(3)
+  active         Boolean   @default(true)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  deletedAt      DateTime?
+
+  products Product[]
+
+  @@index([active, order])
+  @@index([deletedAt])
+  @@map("categories")
+}
+
+model Product {
+  id               String    @id
+  name             String
+  slug             String    @unique
+  sku              String    @default("")
+  code             String    @default("")
+  categoryId       String
+  brand            String    @default("Home Queen")
+  image            String    @default("")
+  cover            String    @default("")
+  gallery          String[]  @default([])
+  wholesaleImage   String    @default("")
+  wholesaleCover   String    @default("")
+  wholesaleGallery String[]  @default([])
+  video            String    @default("")
+  colors           Json      @default("[]")
+  defaultColor     String    @default("")
+  retailPrice      Float     @default(0)
+  wholesalePrice   Float     @default(0)
+  minQty           Int       @default(3)
+  stock            Int       @default(0)
+  active           Boolean   @default(true)
+  featured         Boolean   @default(false)
+  promotion        Boolean   @default(false)
+  launch           Boolean   @default(false)
+  description      String    @default("")
+  seoTitle         String    @default("")
+  seoDescription   String    @default("")
+  seoKeywords      String    @default("")
+  ogImage          String    @default("")
+  indexable        Boolean   @default(true)
+  order            Int       @default(0)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  deletedAt        DateTime?
+  blingSyncedAt    DateTime?
+
+  category Category         @relation(fields: [categoryId], references: [id])
+  variants ProductVariant[]
+
+  @@index([categoryId])
+  @@index([active, order])
+  @@index([deletedAt])
+  @@index([sku])
+  @@map("products")
+}
+
+model ProductVariant {
+  id        String   @id @default(cuid())
+  productId String
+  type      String?
+  size      String?
+  color     String?
+  mattress  String?
+  sku       String   @default("")
+  price     Float    @default(0)
+  stock     Int      @default(0)
+  width     String?
+  depth     String?
+  height    String?
+  weight    String?
+  images    String[] @default([])
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+  @@map("product_variants")
+}
+
+model Brand {
+  id   String @id @default(cuid())
+  name String @unique
+
+  @@map("brands")
+}
+
+// ─── CMS ──────────────────────────────────────────────────────
+
+model CmsSection {
+  key       String   @id
+  data      Json
+  updatedAt DateTime @updatedAt
+
+  @@map("cms_sections")
+}
+
+model Banner {
+  id        String   @id @default(cuid())
+  title     String   @default("")
+  image     String   @default("")
+  link      String   @default("")
+  page      String   @default("home")
+  order     Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([page, order])
+  @@map("banners")
+}
+
+model Coupon {
+  id       String  @id @default(cuid())
+  code     String  @unique
+  discount Float   @default(0)
+  active   Boolean @default(true)
+
+  @@map("coupons")
+}
+
+model SiteSetting {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt
+
+  @@map("site_settings")
+}
+
+// ─── Clientes ─────────────────────────────────────────────────
+
+model Customer {
+  id                 String    @id @default(cuid())
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  name               String
+  cpf                String    @unique
+  email              String
+  phone              String    @default("")
+  whatsapp           String    @default("")
+  passwordHash       String
+  favoriteProductIds String[]  @default([])
+  blingContactId     String?
+  blingSyncedAt      DateTime?
+
+  addresses  CustomerAddress[]
+  orders     Order[]
+  warranties WarrantyClaim[]
+  cartItems  CartItem[]
+  resetTokens CustomerPasswordReset[]
+
+  @@index([email])
+  @@map("customers")
+}
+
+model CustomerPasswordReset {
+  id         String   @id @default(cuid())
+  tokenHash  String   @unique
+  customerId String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([customerId])
+  @@index([expiresAt])
+  @@map("customer_password_resets")
+}
+
+model CustomerAddress {
+  id         String  @id @default(cuid())
+  customerId String
+  label      String  @default("Principal")
+  cep        String  @default("")
+  street     String  @default("")
+  number     String  @default("")
+  complement String?
+  district   String  @default("")
+  city       String  @default("")
+  state      String  @default("")
+  isDefault  Boolean @default(false)
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([customerId])
+  @@map("customer_addresses")
+}
+
+model WarrantyClaim {
+  id          String   @id @default(cuid())
+  customerId  String
+  orderId     String
+  productName String
+  status      String   @default("Aberto")
+  notes       String   @default("")
+  createdAt   DateTime @default(now())
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([customerId])
+  @@map("warranty_claims")
+}
+
+model CartItem {
+  id              String   @id @default(cuid())
+  customerId      String
+  lineKey         String
+  productId       String
+  name            String
+  image           String   @default("")
+  size            String?
+  color           String?
+  type            String?
+  mattress        String?
+  unitPrice       Float    @default(0)
+  quantity        Int      @default(1)
+  category        String?
+  stock           Int?
+  minQty          Int?
+  mode            String?
+  retailUnitPrice Float?
+  updatedAt       DateTime @updatedAt
+  createdAt       DateTime @default(now())
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@unique([customerId, lineKey])
+  @@index([customerId])
+  @@map("cart_items")
+}
+
+model Order {
+  id           String   @id @default(cuid())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  customerId   String?
+  customerName String   @default("")
+  customerType String   @default("Guest")
+  customerCpf  String?
+  dealerId     String?
+  total        Float    @default(0)
+  status       String   @default("Aguardando pagamento")
+  payment      String   @default("")
+  trackingCode String?
+  carrier      String?
+  eta          String?
+  invoiceUrl   String?
+  blingOrderId String?
+  source       String   @default("site")
+
+  customer Customer?   @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  items    OrderItem[]
+  dealer   Dealer?     @relation(fields: [dealerId], references: [id], onDelete: SetNull)
+
+  @@index([status, createdAt])
+  @@index([customerId])
+  @@index([dealerId])
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  name      String
+  quantity  Int     @default(1)
+  unitPrice Float   @default(0)
+  image     String?
+  productId String?
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@map("order_items")
+}
+
+// ─── Atacado ──────────────────────────────────────────────────
+
+model Dealer {
+  id                String   @id @default(cuid())
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  status            String   @default("Pendente")
+  cnpj              String   @unique
+  passwordHash      String
+  companyName       String
+  tradeName         String   @default("")
+  contactName       String   @default("")
+  email             String
+  phone             String   @default("")
+  whatsapp          String   @default("")
+  state             String   @default("")
+  city              String   @default("")
+  stateRegistration String?
+  blocked           Boolean  @default(false)
+  priceTable        String?
+  globalMinOrder    Int?
+  discountPercent   Float?
+  creditLimit       Float?
+  carrier           String?
+  region            String?
+  paymentMethod     String?
+
+  orders          Order[]
+  wholesaleQuotes WholesaleQuote[]
+
+  @@index([status])
+  @@index([email])
+  @@map("dealers")
+}
+
+model WholesaleQuote {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  dealerId    String?
+  name        String
+  company     String   @default("")
+  cnpj        String   @default("")
+  email       String   @default("")
+  whatsapp    String   @default("")
+  product     String   @default("")
+  category    String?
+  model       String?
+  type        String?
+  size        String?
+  color       String?
+  mattress    String?
+  quantity    Int      @default(1)
+  notes       String   @default("")
+  attachments Json     @default("[]")
+
+  dealer Dealer? @relation(fields: [dealerId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+  @@index([dealerId])
+  @@map("wholesale_quotes")
+}
+
+// ─── Orçamentos ───────────────────────────────────────────────
+
+model Quote {
+  id              String   @id @default(cuid())
+  number          String   @unique
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  status          String   @default("Novo")
+  responsible     String   @default("")
+  customer        Json
+  product         Json
+  message         String   @default("")
+  attachments     Json     @default("[]")
+  emailToCompany  Boolean  @default(false)
+  emailToCustomer Boolean  @default(false)
+
+  @@index([status, createdAt])
+  @@map("quotes")
+}
+
+// ─── Contato ──────────────────────────────────────────────────
+
+model ContactMessage {
+  id         String   @id @default(cuid())
+  createdAt  DateTime @default(now())
+  helpIntent String   @default("")
+  name       String
+  company    String   @default("")
+  document   String   @default("")
+  email      String   @default("")
+  phone      String   @default("")
+  whatsapp   String   @default("")
+  city       String   @default("")
+  state      String   @default("")
+  subject    String   @default("")
+  message    String   @default("")
+
+  @@index([createdAt])
+  @@map("contact_messages")
+}
+
+model ContactSettings {
+  id   Int  @id @default(1)
+  data Json
+
+  @@map("contact_settings")
+}
+
+// ─── Mídia ────────────────────────────────────────────────────
+
+model MediaAsset {
+  id           String   @id
+  name         String
+  originalName String
+  url          String
+  thumbUrl     String   @default("")
+  webpUrl      String?
+  mime         String   @default("")
+  size         Int      @default(0)
+  width        Int?
+  height       Int?
+  folder       String   @default("geral")
+  productId    String?
+  categoryId   String?
+  usedIn       String[] @default([])
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([folder])
+  @@index([productId])
+  @@map("media_assets")
+}
+
+// ─── Monitoramento / manutenção / versão ──────────────────────
+
+model SystemError {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  severity  String   @default("error") // info | warning | error | critical
+  source    String   @default("api")
+  message   String
+  stack     String?
+  url       String?
+  user      String?
+  ip        String?
+  userAgent String?
+  meta      Json?
+
+  @@index([createdAt])
+  @@index([severity])
+  @@index([source])
+  @@map("system_errors")
+}
+
+model SystemVersion {
+  id          String   @id @default(cuid())
+  version     String
+  description String   @default("")
+  author      String   @default("Sistema")
+  releasedAt  DateTime @default(now())
+  isCurrent   Boolean  @default(false)
+
+  @@index([releasedAt])
+  @@index([isCurrent])
+  @@map("system_versions")
+}
+
+model BackupMeta {
+  id               Int       @id @default(1)
+  lastDailyAt      DateTime?
+  lastWeeklyAt     DateTime?
+  lastMonthlyAt    DateTime?
+  lastManualAt     DateTime?
+  nextDailyAt      DateTime?
+  installedAt      DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@map("backup_meta")
+}
+
+model SystemAlert {
+  id         String    @id @default(cuid())
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  code       String
+  severity   String    @default("warning") // info | warning | critical
+  title      String
+  message    String
+  source     String    @default("system")
+  active     Boolean   @default(true)
+  resolvedAt DateTime?
+  emailSent  Boolean   @default(false)
+  meta       Json?
+
+  @@index([code, active])
+  @@index([active, createdAt])
+  @@index([severity])
+  @@map("system_alerts")
+}
+
+model SiteView {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  path      String
+  referrer  String?
+  productId String?
+  sessionId String?
+  ip        String?
+
+  @@index([createdAt])
+  @@index([path])
+  @@index([productId])
+  @@map("site_views")
+}
+
+model IntegrityReport {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  status      String   @default("ok") // ok | warning | error
+  summary     String   @default("")
+  issues      Json
+  checkedAt   DateTime @default(now())
+
+  @@index([createdAt])
+  @@map("integrity_reports")
+}
