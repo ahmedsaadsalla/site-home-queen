@@ -48,7 +48,7 @@ export function BenefitsBar() {
   }, []);
 
   return (
-    <section className="relative z-30 -mt-4 mb-[-2rem] px-4 sm:-mt-6 sm:mb-[-3rem] sm:px-6 lg:px-8">
+    <section className="relative z-30 -mt-4 mb-6 px-4 sm:-mt-6 sm:mb-8 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-[1240px]">
         <div className="rounded-[16px] bg-[#171717] px-3 py-3 shadow-[0_16px_40px_rgba(0,0,0,0.4)] sm:rounded-[20px] sm:px-5 sm:py-4">
           <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 sm:gap-3 lg:grid-cols-4">

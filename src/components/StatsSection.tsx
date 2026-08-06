@@ -176,7 +176,7 @@ export function StatsSection({
   }, []);
 
   return (
-    <section id="numeros" ref={ref} className="scroll-mt-8 bg-[#F5F5F3] pb-5 pt-6">
+    <section id="numeros" ref={ref} className="scroll-mt-8 bg-[#F5F5F3] pb-5 pt-2 sm:pt-3">
       <div className="mx-auto max-w-[1240px] px-6 lg:px-8">
         {/* 2x2 no celular/netbook · 4 em linha no desktop */}
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
