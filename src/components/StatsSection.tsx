@@ -135,7 +135,6 @@ function StatCard({
 
 export function StatsSection({
   stats: statsProp,
-  title: titleProp,
 }: {
   stats?: SiteStatItem[];
   title?: string;
@@ -144,9 +143,6 @@ export function StatsSection({
   const [active, setActive] = useState(false);
   const [stats, setStats] = useState<SiteStatItem[]>(() =>
     normalizeStats(statsProp?.length ? statsProp : DEFAULT_STATS),
-  );
-  const [title, setTitle] = useState(
-    titleProp || "Nossos números falam por nós",
   );
 
   const visibleStats = useMemo(() => normalizeStats(stats), [stats]);
@@ -160,14 +156,9 @@ export function StatsSection({
       .then((r) => r.json())
       .then((cms) => {
         if (cms?.home?.stats?.length) setStats(normalizeStats(cms.home.stats));
-        if (cms?.home?.statsTitle) setTitle(cms.home.statsTitle);
       })
       .catch(() => undefined);
   }, [statsProp]);
-
-  useEffect(() => {
-    if (titleProp) setTitle(titleProp);
-  }, [titleProp]);
 
   useEffect(() => {
     const node = ref.current;
@@ -187,11 +178,8 @@ export function StatsSection({
   return (
     <section id="numeros" ref={ref} className="scroll-mt-8 bg-[#F5F5F3] pb-5 pt-6">
       <div className="mx-auto max-w-[1240px] px-6 lg:px-8">
-        <p className="text-center font-display text-[18px] italic text-[#C5A059] sm:text-[20px]">
-          {title}
-        </p>
         {/* 2x2 no celular/netbook · 4 em linha no desktop */}
-        <div className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
           {visibleStats.map((stat, index) => (
             <StatCard
               key={stat.id || stat.label}
