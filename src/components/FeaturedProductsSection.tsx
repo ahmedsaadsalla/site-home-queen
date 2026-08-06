@@ -96,7 +96,7 @@ export function FeaturedProductsSection() {
           ) : null}
         </div>
 
-        <div className="mt-10 grid gap-6 lg:grid-cols-3">
+        <div className="mt-8 grid grid-cols-1 gap-4 sm:mt-10 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
           {products.map((product) => {
             const wholesale = getWholesaleUnit(
               product.price,

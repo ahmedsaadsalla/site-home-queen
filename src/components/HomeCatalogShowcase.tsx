@@ -192,7 +192,7 @@ function ProductCard({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 10 }}
       transition={{ duration: 0.3 }}
-      className="group flex flex-col overflow-hidden rounded-[16px] bg-white shadow-[0_10px_40px_rgba(15,15,16,0.06)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_16px_48px_rgba(15,15,16,0.1)]"
+      className="group flex flex-col overflow-hidden rounded-[14px] bg-white shadow-[0_10px_40px_rgba(15,15,16,0.06)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_16px_48px_rgba(15,15,16,0.1)] sm:rounded-[16px]"
     >
       <div className="relative aspect-[4/3] overflow-hidden bg-[#EEEAE4]">
         <Link href={`/produto/${product.id}`} className="absolute inset-0">
@@ -201,7 +201,7 @@ function ProductCard({
             alt={product.name}
             fill
             className="object-cover transition duration-300 group-hover:scale-105"
-            sizes="(max-width: 1024px) 50vw, 28vw"
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 50vw, 28vw"
           />
         </Link>
         <button
@@ -216,60 +216,60 @@ function ProductCard({
               category: categoryLabel,
             })
           }
-          className={`absolute right-3 top-3 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-[0_4px_14px_rgba(15,15,16,0.18)] transition duration-300 hover:scale-105 ${
+          className={`absolute right-2 top-2 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-white/95 shadow-[0_4px_14px_rgba(15,15,16,0.18)] transition duration-300 hover:scale-105 sm:right-3 sm:top-3 sm:h-10 sm:w-10 ${
             favorited
               ? "text-[#C5A059]"
               : "text-[#0F0F10]/70 hover:text-[#C5A059]"
           }`}
         >
-          <IconHeart className="h-[18px] w-[18px]" filled={favorited} />
+          <IconHeart className="h-4 w-4 sm:h-[18px] sm:w-[18px]" filled={favorited} />
         </button>
       </div>
 
-      <div className="flex flex-1 flex-col px-5 pb-4 pt-4">
+      <div className="flex flex-1 flex-col px-3 pb-3 pt-3 sm:px-5 sm:pb-4 sm:pt-4">
         <Link href={`/produto/${product.id}`}>
-          <h3 className="font-display text-[18px] leading-snug text-[#0F0F10] transition hover:text-[#C5A059] sm:text-[20px]">
+          <h3 className="font-display text-[14px] leading-snug text-[#0F0F10] transition hover:text-[#C5A059] sm:text-[20px]">
             {merged.name}
           </h3>
         </Link>
 
-        <div className="mt-2 flex items-center gap-2">
+        <div className="mt-1.5 flex items-center gap-1.5 sm:mt-2 sm:gap-2">
           <Stars />
-          <span className="text-[12px] text-[#6B6B6B]">
+          <span className="text-[10px] text-[#6B6B6B] sm:text-[12px]">
             {product.rating.toFixed(1)} ({product.reviews})
           </span>
         </div>
 
         {isReseller ? (
-          <div className="mt-3 space-y-1">
-            <p className="text-[12px] text-[#6B6B6B] line-through">
+          <div className="mt-2 space-y-0.5 sm:mt-3 sm:space-y-1">
+            <p className="text-[10px] text-[#6B6B6B] line-through sm:text-[12px]">
               Varejo {formatBRL(merged.price)}
             </p>
-            <p className="text-[15px] font-semibold text-[#0F0F10]">
+            <p className="text-[13px] font-semibold text-[#0F0F10] sm:text-[15px]">
               Atacado {formatBRL(wholesale)}
             </p>
-            <p className="text-[12px] text-[#2E2E2E]">
+            <p className="text-[10px] text-[#2E2E2E] sm:text-[12px]">
               Pedido mínimo {minQty} un.
               {typeof stockHint === "number" ? ` · ${stockHint} em estoque` : ""}
             </p>
           </div>
         ) : (
           <>
-            <p className="mt-3 text-[15px] font-semibold text-[#0F0F10]">
+            <p className="mt-2 text-[13px] font-semibold text-[#0F0F10] sm:mt-3 sm:text-[15px]">
               A partir de {formatBRL(merged.price)}
             </p>
-            <p className="mt-1 text-[12px] text-[#6B6B6B]">
+            <p className="mt-0.5 text-[10px] text-[#6B6B6B] sm:mt-1 sm:text-[12px]">
               10x de {formatBRL(Math.round(merged.price / 10))} sem juros
             </p>
           </>
         )}
 
-        <div className="mt-4 flex flex-col gap-1.5">
+        <div className="mt-3 flex flex-col gap-1.5 sm:mt-4">
           <Link
             href={`/produto/${product.id}`}
-            className="inline-flex h-9 w-full items-center justify-center rounded-md bg-[#C8A96A] px-3 text-[10px] font-bold uppercase tracking-[0.1em] text-[#0F0F10] transition duration-300 hover:bg-[#B8934F]"
+            className="inline-flex h-8 w-full items-center justify-center rounded-md bg-[#C8A96A] px-2 text-[9px] font-bold uppercase tracking-[0.08em] text-[#0F0F10] transition duration-300 hover:bg-[#B8934F] sm:h-9 sm:px-3 sm:text-[10px] sm:tracking-[0.1em]"
           >
-            {isReseller ? "Comprar" : "Comprar"}
+            Comprar
           </Link>
 
           <button
@@ -291,7 +291,7 @@ function ProductCard({
                 { open: true },
               )
             }
-            className="inline-flex h-8 w-full items-center justify-center whitespace-nowrap rounded-md border border-[#C8A96A] px-3 text-[9px] font-bold uppercase tracking-[0.08em] text-[#0F0F10] transition hover:bg-[#C8A96A]/15"
+            className="hidden h-8 w-full items-center justify-center whitespace-nowrap rounded-md border border-[#C8A96A] px-3 text-[9px] font-bold uppercase tracking-[0.08em] text-[#0F0F10] transition hover:bg-[#C8A96A]/15 sm:inline-flex"
           >
             Adicionar ao carrinho
           </button>
@@ -445,40 +445,48 @@ export function HomeCatalogShowcase() {
 
         <div className="mt-5">
           <p className="text-[12px] font-semibold text-[#0F0F10]">Tamanho</p>
-          <ul className="mt-2.5 space-y-2">
-            {sizes.map((size) => (
-              <li key={size}>
-                <label className="flex cursor-pointer items-center gap-2.5 text-[13px] text-[#2E2E2E]">
-                  <input
-                    type="checkbox"
-                    checked={selectedSizes.includes(size)}
-                    onChange={() => toggleSize(size)}
-                    className="h-3.5 w-3.5 accent-[#C8A96A]"
-                  />
+          <div className="mt-2.5 flex flex-wrap gap-2">
+            {sizes.map((size) => {
+              const on = selectedSizes.includes(size);
+              return (
+                <button
+                  key={size}
+                  type="button"
+                  onClick={() => toggleSize(size)}
+                  className={`rounded-full border px-3 py-1.5 text-[11px] font-semibold transition ${
+                    on
+                      ? "border-[#C8A96A] bg-[#C8A96A] text-black"
+                      : "border-[#0F0F10]/12 bg-white text-[#2E2E2E] hover:border-[#C8A96A]/60"
+                  }`}
+                >
                   {size}
-                </label>
-              </li>
-            ))}
-          </ul>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         <div className="mt-5">
           <p className="text-[12px] font-semibold text-[#0F0F10]">Tipo</p>
-          <ul className="mt-2.5 space-y-2">
-            {types.map((type) => (
-              <li key={type}>
-                <label className="flex cursor-pointer items-center gap-2.5 text-[13px] text-[#2E2E2E]">
-                  <input
-                    type="checkbox"
-                    checked={selectedTypes.includes(type)}
-                    onChange={() => toggleType(type)}
-                    className="h-3.5 w-3.5 accent-[#C8A96A]"
-                  />
+          <div className="mt-2.5 flex flex-wrap gap-2">
+            {types.map((type) => {
+              const on = selectedTypes.includes(type);
+              return (
+                <button
+                  key={type}
+                  type="button"
+                  onClick={() => toggleType(type)}
+                  className={`rounded-full border px-3 py-1.5 text-[11px] font-semibold transition ${
+                    on
+                      ? "border-[#C8A96A] bg-[#C8A96A] text-black"
+                      : "border-[#0F0F10]/12 bg-white text-[#2E2E2E] hover:border-[#C8A96A]/60"
+                  }`}
+                >
                   {type}
-                </label>
-              </li>
-            ))}
-          </ul>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         <div className="mt-5">
@@ -546,9 +554,21 @@ export function HomeCatalogShowcase() {
                 <button
                   type="button"
                   onClick={() => setFiltersOpen(true)}
-                  className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-md border border-[#0F0F10]/15 bg-white px-4 text-[12px] font-semibold uppercase tracking-[0.08em] text-[#0F0F10] transition hover:border-[#C8A96A] lg:hidden"
+                  className="group relative inline-flex h-12 w-full items-center justify-center gap-2.5 overflow-hidden rounded-full border border-[#C8A96A]/45 bg-[#0F0F10] px-5 text-[11px] font-bold uppercase tracking-[0.16em] text-[#C8A96A] shadow-[0_10px_28px_rgba(15,15,16,0.18)] transition hover:border-[#C8A96A] hover:text-[#E2C48A] lg:hidden"
                 >
-                  Categorias e filtros
+                  <span
+                    aria-hidden
+                    className="absolute inset-0 bg-gradient-to-r from-[#C8A96A]/10 via-transparent to-[#C8A96A]/10 opacity-80"
+                  />
+                  <svg viewBox="0 0 24 24" className="relative h-4 w-4" fill="none" aria-hidden>
+                    <path
+                      d="M4 6h16M7 12h10M10 18h4"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                  <span className="relative">Categorias e filtros</span>
                 </button>
                 <label className="flex w-full shrink-0 items-center justify-between gap-2 text-[12px] text-[#2E2E2E] sm:w-auto sm:justify-start">
                   <span className="text-[#6B6B6B]">Ordenar por:</span>
@@ -573,7 +593,7 @@ export function HomeCatalogShowcase() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.3 }}
-                className="mt-6 grid grid-cols-1 gap-4 sm:mt-8 sm:grid-cols-2 sm:gap-6 xl:grid-cols-3"
+                className="mt-6 grid grid-cols-2 gap-3 sm:mt-8 sm:gap-6 xl:grid-cols-3"
               >
                 {products.map((product) => (
                   <ProductCard
@@ -619,7 +639,7 @@ export function HomeCatalogShowcase() {
             <button
               type="button"
               onClick={() => setFiltersOpen(false)}
-              className="mt-6 inline-flex h-11 w-full items-center justify-center rounded-md bg-[#C8A96A] text-[12px] font-bold uppercase tracking-[0.1em] text-black"
+              className="mt-6 inline-flex h-12 w-full items-center justify-center rounded-full bg-[#0F0F10] text-[11px] font-bold uppercase tracking-[0.14em] text-[#C8A96A]"
             >
               Ver produtos
             </button>

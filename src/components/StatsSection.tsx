@@ -105,17 +105,21 @@ function StatCard({
 
   return (
     <article
-      className={`flex min-h-[110px] flex-col rounded-[14px] bg-white px-4 py-3.5 shadow-[0_8px_30px_rgba(15,15,16,0.08)] transition-all duration-700 ${
+      className={`flex w-[152px] shrink-0 snap-start flex-col rounded-[14px] border border-[#C5A059]/15 bg-white px-3.5 py-3.5 shadow-[0_8px_30px_rgba(15,15,16,0.08)] transition-all duration-700 sm:w-[168px] lg:w-auto lg:min-h-[110px] lg:px-4 ${
         active ? "translate-y-0 opacity-100 scale-100" : "translate-y-6 opacity-0 scale-95"
       }`}
       style={{ transitionDelay: `${delay}ms` }}
     >
-      <div className="mb-2 text-[#C5A059]">{icon}</div>
-      <p className="text-[32px] font-bold leading-none tracking-tight text-[#0F0F10] sm:text-[36px]">
+      <div className="mb-2 text-[#C5A059] [&_svg]:h-7 [&_svg]:w-7 sm:[&_svg]:h-8 sm:[&_svg]:w-8 lg:[&_svg]:h-10 lg:[&_svg]:w-10">
+        {icon}
+      </div>
+      <p className="text-[26px] font-bold leading-none tracking-tight text-[#0F0F10] sm:text-[30px] lg:text-[36px]">
         {count.toLocaleString("pt-BR")}
         {suffix}
       </p>
-      <p className="mt-2 text-[13px] leading-5 text-[#6B6B6B]">{label}</p>
+      <p className="mt-2 text-[12px] leading-4 text-[#6B6B6B] lg:text-[13px] lg:leading-5">
+        {label}
+      </p>
     </article>
   );
 }
@@ -168,12 +172,12 @@ export function StatsSection({
   }, []);
 
   return (
-    <section id="numeros" ref={ref} className="scroll-mt-8 bg-[#F5F5F3] pb-4 pt-6">
-      <div className="mx-auto max-w-[1240px] px-6 lg:px-8">
-        <p className="text-center font-display text-[18px] italic text-[#C5A059] sm:text-[20px]">
+    <section id="numeros" ref={ref} className="scroll-mt-8 bg-[#F5F5F3] pb-5 pt-6">
+      <div className="mx-auto max-w-[1240px] lg:px-8">
+        <p className="px-6 text-center font-display text-[18px] italic text-[#C5A059] sm:text-[20px] lg:px-0">
           {title}
         </p>
-        <div className="mt-5 grid grid-cols-2 gap-2.5 sm:gap-3 md:grid-cols-3 lg:grid-cols-5">
+        <div className="mt-5 flex gap-3 overflow-x-auto px-6 pb-1 [-ms-overflow-style:none] [scrollbar-width:none] snap-x snap-mandatory lg:grid lg:grid-cols-5 lg:gap-3 lg:overflow-visible lg:px-0 lg:pb-0 [&::-webkit-scrollbar]:hidden">
           {stats.map((stat, index) => (
             <StatCard
               key={stat.id || stat.label}
