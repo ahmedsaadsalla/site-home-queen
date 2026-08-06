@@ -526,7 +526,7 @@ export function HomeCatalogShowcase() {
             <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
               <div className="max-w-xl">
                 {catalogTitle ? (
-                  <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.16em] text-[#C8A96A]">
+                  <p className="mb-2 text-[13px] font-bold uppercase tracking-[0.14em] text-[#C8A96A] sm:text-[14px]">
                     {catalogTitle}
                   </p>
                 ) : null}
