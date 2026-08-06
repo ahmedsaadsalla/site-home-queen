@@ -54,7 +54,7 @@ export function HeaderSearch({
   return (
     <div ref={rootRef} className={`relative ${className}`}>
       <label
-        className={`flex h-10 w-[180px] items-center gap-2 rounded-full border bg-white px-3 transition duration-200 lg:w-[220px] ${
+        className={`flex h-10 w-full items-center gap-2 rounded-full border bg-white px-3 transition duration-200 md:w-[180px] lg:w-[220px] ${
           open
             ? "border-[#C8A96A] shadow-[0_0_0_3px_rgba(200,169,106,0.18)]"
             : "border-[#E5E5E5] hover:border-[#C8A96A]"

@@ -109,28 +109,28 @@ export function Hero() {
       <div className="absolute inset-0 bg-gradient-to-r from-black/82 via-black/45 to-transparent" />
       <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20" />
 
-      <div className="relative z-10 mx-auto flex min-h-[280px] max-w-[1240px] items-center px-6 pb-8 pt-4 sm:min-h-[300px] lg:px-8">
-        <div className="max-w-[480px]">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[#C5A059]">
+      <div className="relative z-10 mx-auto flex min-h-[300px] max-w-[1240px] items-end px-5 pb-14 pt-8 sm:min-h-[320px] sm:items-center sm:px-6 sm:pb-8 sm:pt-4 lg:px-8">
+        <div className="w-full max-w-[480px]">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#C5A059] sm:text-[11px]">
             {slide.eyebrow}
           </p>
-          <h1 className="font-display mt-3 text-[28px] leading-[1.12] sm:text-[34px] lg:text-[38px]">
+          <h1 className="font-display mt-2 text-[26px] leading-[1.15] sm:mt-3 sm:text-[34px] lg:text-[38px]">
             {slide.title}
           </h1>
-          <p className="mt-5 text-[14px] leading-7 text-white/75">
+          <p className="mt-3 text-[13px] leading-6 text-white/75 sm:mt-5 sm:text-[14px] sm:leading-7">
             {slide.subtitle}
           </p>
-          <div className="mt-8 flex flex-wrap gap-3">
+          <div className="mt-6 flex w-full flex-col gap-2.5 sm:mt-8 sm:flex-row sm:flex-wrap sm:gap-3">
             <a
               href={slide.cta1Href || "/#nosso-catalogo"}
-              className="relative z-20 inline-flex items-center gap-2 rounded-md bg-[#C5A059] px-6 py-3.5 text-[11px] font-bold uppercase tracking-[0.12em] text-black transition hover:bg-[#d4b06a]"
+              className="relative z-20 inline-flex w-full items-center justify-center gap-2 rounded-md bg-[#C5A059] px-6 py-3.5 text-[11px] font-bold uppercase tracking-[0.12em] text-black transition hover:bg-[#d4b06a] sm:w-auto"
             >
               {slide.cta1Label || "Comprar agora"}
               <IconChevron className="h-3.5 w-3.5" />
             </a>
             <a
               href={slide.cta2Href || "/orcamento"}
-              className="inline-flex items-center rounded-md border border-white/50 px-6 py-3.5 text-[11px] font-bold uppercase tracking-[0.12em] text-white transition hover:border-[#C5A059] hover:text-[#C5A059]"
+              className="inline-flex w-full items-center justify-center rounded-md border border-white/50 px-6 py-3.5 text-[11px] font-bold uppercase tracking-[0.12em] text-white transition hover:border-[#C5A059] hover:text-[#C5A059] sm:w-auto"
             >
               {slide.cta2Label || "Fazer orçamento"}
             </a>

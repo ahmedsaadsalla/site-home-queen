@@ -173,7 +173,7 @@ export function StatsSection({
         <p className="text-center font-display text-[18px] italic text-[#C5A059] sm:text-[20px]">
           {title}
         </p>
-        <div className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-5">
+        <div className="mt-5 grid grid-cols-2 gap-2.5 sm:gap-3 md:grid-cols-3 lg:grid-cols-5">
           {stats.map((stat, index) => (
             <StatCard
               key={stat.id || stat.label}

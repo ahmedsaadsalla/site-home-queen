@@ -47,20 +47,21 @@ function AccountMenu() {
 
   if (isReseller || isCustomer) {
     return (
-      <div ref={rootRef} className="relative hidden sm:block">
+      <div ref={rootRef} className="relative">
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
           aria-expanded={open}
           aria-haspopup="menu"
-          className="inline-flex max-w-[140px] items-center gap-2 rounded-full border border-white/20 px-3 py-2 text-[13px] font-medium text-white transition hover:border-[#C8A96A] hover:text-[#C8A96A] lg:max-w-[160px]"
+          className="inline-flex max-w-[140px] items-center gap-2 rounded-full border border-white/20 p-2.5 text-[13px] font-medium text-white transition hover:border-[#C8A96A] hover:text-[#C8A96A] sm:px-3 sm:py-2 lg:max-w-[160px]"
           title={greetName || undefined}
+          aria-label={greetName || (isReseller ? "Revendedor" : "Cliente")}
         >
           <svg viewBox="0 0 24 24" className="h-5 w-5 shrink-0" fill="currentColor" aria-hidden>
             <circle cx="12" cy="8" r="4" />
             <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
           </svg>
-          <span className="truncate">
+          <span className="hidden truncate sm:inline">
             {greetName || (isReseller ? "Revendedor" : "Cliente")}
           </span>
         </button>
@@ -113,19 +114,20 @@ function AccountMenu() {
   }
 
   return (
-    <div ref={rootRef} className="relative hidden sm:block">
+    <div ref={rootRef} className="relative">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-haspopup="menu"
-        className="inline-flex items-center gap-2 rounded-full border border-white/20 px-3 py-2 text-[13px] font-medium text-white transition hover:border-[#C8A96A] hover:text-[#C8A96A]"
+        className="inline-flex items-center gap-2 rounded-full border border-white/20 p-2.5 text-[13px] font-medium text-white transition hover:border-[#C8A96A] hover:text-[#C8A96A] sm:px-3 sm:py-2"
+        aria-label="Minha conta"
       >
         <svg viewBox="0 0 24 24" className="h-5 w-5 shrink-0" fill="currentColor" aria-hidden>
           <circle cx="12" cy="8" r="4" />
           <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
         </svg>
-        <span>Olá !</span>
+        <span className="hidden sm:inline">Olá !</span>
       </button>
 
       {open ? (
@@ -155,9 +157,21 @@ function AccountMenu() {
   );
 }
 
+const mobileCategories = [
+  { id: "camas-box", label: "Camas Box" },
+  { id: "camas-box-bau", label: "Camas Box Baú" },
+  { id: "camas-com-colchao", label: "Camas com Colchão" },
+  { id: "colchoes", label: "Colchões" },
+  { id: "cabeceiras", label: "Cabeceiras" },
+  { id: "bases", label: "Bases" },
+  { id: "baus", label: "Baús" },
+  { id: "acessorios", label: "Acessórios" },
+] as const;
+
 export function SiteHeader() {
   const { cartCount, favoritesCount, openDrawer } = useShop();
   const { isReseller } = useDealer();
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   /** Menu central — só links de navegação (conta/sair no menu do usuário) */
   const navLinks = isReseller
@@ -174,18 +188,32 @@ export function SiteHeader() {
         { href: "/contato", label: "Contato" },
       ];
 
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setMobileOpen(false);
+    }
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = prev;
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [mobileOpen]);
+
   return (
     <header className="relative z-[80] border-b border-white/5 bg-black">
-      <div className="mx-auto grid h-[78px] max-w-[1240px] grid-cols-[auto_1fr_auto] items-center gap-4 overflow-visible px-4 lg:gap-6 lg:px-6">
+      <div className="mx-auto grid h-[72px] max-w-[1240px] grid-cols-[auto_1fr_auto] items-center gap-2 overflow-visible px-3 sm:h-[78px] sm:gap-4 sm:px-4 lg:gap-6 lg:px-6">
         {/* Logo */}
         <a
           href="/"
-          className="relative h-[66px] w-[160px] shrink-0 overflow-hidden sm:w-[200px] lg:w-[220px]"
+          className="relative h-[56px] w-[130px] shrink-0 overflow-hidden sm:h-[66px] sm:w-[200px] lg:w-[220px]"
           aria-label="Home Queen"
         >
           <Logo
             priority
-            className="absolute -left-2 top-1/2 h-[66px] w-[66px] -translate-y-1/2 origin-left scale-x-[2.2] scale-y-[1.9] sm:scale-x-[2.4] sm:scale-y-[2]"
+            className="absolute -left-2 top-1/2 h-[56px] w-[56px] -translate-y-1/2 origin-left scale-x-[2.1] scale-y-[1.85] sm:h-[66px] sm:w-[66px] sm:scale-x-[2.4] sm:scale-y-[2]"
           />
         </a>
 
@@ -207,8 +235,26 @@ export function SiteHeader() {
           ))}
         </nav>
 
-        {/* Ações à direita: busca | conta | favoritos | carrinho */}
-        <div className="flex shrink-0 items-center justify-end gap-2 sm:gap-2.5">
+        {/* Ações à direita: menu | busca | conta | favoritos | carrinho */}
+        <div className="flex shrink-0 items-center justify-end gap-1.5 sm:gap-2.5">
+          <button
+            type="button"
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-white/40 text-white transition hover:border-[#C8A96A] lg:hidden"
+            aria-label={mobileOpen ? "Fechar menu" : "Abrir menu"}
+            aria-expanded={mobileOpen}
+            onClick={() => setMobileOpen((v) => !v)}
+          >
+            {mobileOpen ? (
+              <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" aria-hidden>
+                <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+              </svg>
+            ) : (
+              <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" aria-hidden>
+                <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+              </svg>
+            )}
+          </button>
+
           <HeaderSearch className="hidden md:block" />
           <AccountMenu />
 
@@ -247,6 +293,65 @@ export function SiteHeader() {
           </button>
         </div>
       </div>
+
+      {mobileOpen ? (
+        <div className="border-t border-white/10 bg-[#0F0F10] lg:hidden">
+          <div className="mx-auto max-h-[min(70vh,560px)] max-w-[1240px] overflow-y-auto px-4 py-4">
+            <div className="mb-4 md:hidden">
+              <HeaderSearch className="w-full" />
+            </div>
+
+            {!isReseller ? (
+              <div className="mb-4">
+                <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.16em] text-[#C8A96A]">
+                  Categorias
+                </p>
+                <ul className="grid grid-cols-1 gap-1 sm:grid-cols-2">
+                  {mobileCategories.map((category) => (
+                    <li key={category.id}>
+                      <a
+                        href={`/?categoria=${category.id}#nosso-catalogo`}
+                        onClick={() => setMobileOpen(false)}
+                        className="flex items-center justify-between rounded-[10px] px-3 py-2.5 text-[13px] font-medium text-white transition hover:bg-white/5 hover:text-[#C8A96A]"
+                      >
+                        {category.label}
+                        <span className="text-white/35">›</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+
+            <nav className="flex flex-col gap-1 border-t border-white/10 pt-3">
+              {navLinks.map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setMobileOpen(false)}
+                  className="rounded-[10px] px-3 py-3 text-[13px] font-semibold uppercase tracking-[0.12em] text-white transition hover:bg-white/5 hover:text-[#C8A96A]"
+                >
+                  {link.label}
+                </a>
+              ))}
+              <a
+                href="/minha-conta"
+                onClick={() => setMobileOpen(false)}
+                className="rounded-[10px] px-3 py-3 text-[13px] font-semibold uppercase tracking-[0.12em] text-white transition hover:bg-white/5 hover:text-[#C8A96A]"
+              >
+                Minha conta
+              </a>
+              <a
+                href="/orcamento"
+                onClick={() => setMobileOpen(false)}
+                className="mt-1 inline-flex items-center justify-center rounded-md bg-[#C8A96A] px-4 py-3 text-[12px] font-bold uppercase tracking-[0.12em] text-black"
+              >
+                Fazer orçamento
+              </a>
+            </nav>
+          </div>
+        </div>
+      ) : null}
     </header>
   );
 }

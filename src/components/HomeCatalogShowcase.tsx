@@ -311,6 +311,7 @@ export function HomeCatalogShowcase() {
   const [selectedTypes, setSelectedTypes] = useState<string[]>(["Box Baú"]);
   const [selectedColor, setSelectedColor] = useState("Preto");
   const [sort, setSort] = useState("Mais vendidos");
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const [overrides, setOverrides] = useState<Map<string, ProductOverride>>(
     () => new Map(),
   );
@@ -370,125 +371,146 @@ export function HomeCatalogShowcase() {
     );
   }
 
-  return (
-    <section id="nosso-catalogo" className="scroll-mt-8 w-full bg-[#F8F8F6]">
-      <div className="mx-auto max-w-[1440px] px-5 pb-12 pt-4 sm:px-8 lg:px-10 lg:pb-16 lg:pt-6">
-        <div className="grid gap-8 lg:grid-cols-[260px_1fr] xl:grid-cols-[280px_1fr] xl:gap-10">
-          {/* Sidebar */}
-          <aside className="h-fit rounded-[16px] bg-white p-5 shadow-[0_10px_40px_rgba(15,15,16,0.05)] lg:sticky lg:top-6 lg:p-6">
-            <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#0F0F10]">
-              Categorias
-            </p>
-            <ul className="mt-3 space-y-1">
-              {categories.map((category) => {
-                const active = category.id === activeId;
-                const count = homeCatalogConfig.products.filter(
-                  (p) => p.categoryId === category.id,
-                ).length;
-                const min = getMinQty(category.id, dealer?.globalMinOrder);
-                return (
-                  <li key={category.id}>
-                    <button
-                      type="button"
-                      onClick={() => setActiveId(category.id)}
-                      className={`flex w-full items-center gap-2.5 rounded-[10px] px-3 py-2.5 text-left text-[13px] transition duration-300 ${
-                        active
-                          ? "bg-[#C8A96A] font-semibold text-black"
-                          : "text-[#2E2E2E] hover:bg-[#F8F8F6]"
+  useEffect(() => {
+    if (!filtersOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setFiltersOpen(false);
+    }
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = prev;
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [filtersOpen]);
+
+  const filterPanel = (
+    <>
+      <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#0F0F10]">
+        Categorias
+      </p>
+      <ul className="mt-3 space-y-1">
+        {categories.map((category) => {
+          const active = category.id === activeId;
+          const count = homeCatalogConfig.products.filter(
+            (p) => p.categoryId === category.id,
+          ).length;
+          const min = getMinQty(category.id, dealer?.globalMinOrder);
+          return (
+            <li key={category.id}>
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveId(category.id);
+                  setFiltersOpen(false);
+                }}
+                className={`flex w-full items-center gap-2.5 rounded-[10px] px-3 py-2.5 text-left text-[13px] transition duration-300 ${
+                  active
+                    ? "bg-[#C8A96A] font-semibold text-black"
+                    : "text-[#2E2E2E] hover:bg-[#F8F8F6]"
+                }`}
+              >
+                <span className={active ? "text-black" : "text-[#C8A96A]"}>
+                  {categoryIcons[category.id]}
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block">{category.label}</span>
+                  {isReseller ? (
+                    <span
+                      className={`block text-[10px] font-normal ${
+                        active ? "text-black/70" : "text-[#6B6B6B]"
                       }`}
                     >
-                      <span
-                        className={active ? "text-black" : "text-[#C8A96A]"}
-                      >
-                        {categoryIcons[category.id]}
-                      </span>
-                      <span className="min-w-0 flex-1">
-                        <span className="block">{category.label}</span>
-                        {isReseller ? (
-                          <span
-                            className={`block text-[10px] font-normal ${
-                              active ? "text-black/70" : "text-[#6B6B6B]"
-                            }`}
-                          >
-                            {count} produtos · mín. {min}
-                          </span>
-                        ) : null}
-                      </span>
-                      <IconChevron
-                        direction="right"
-                        className={`h-3.5 w-3.5 ${
-                          active ? "text-[#0F0F10]" : "text-[#2E2E2E]/35"
-                        }`}
-                      />
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
+                      {count} produtos · mín. {min}
+                    </span>
+                  ) : null}
+                </span>
+                <IconChevron
+                  direction="right"
+                  className={`h-3.5 w-3.5 ${
+                    active ? "text-[#0F0F10]" : "text-[#2E2E2E]/35"
+                  }`}
+                />
+              </button>
+            </li>
+          );
+        })}
+      </ul>
 
-            <div className="mt-7 border-t border-[#0F0F10]/08 pt-6">
-              <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#0F0F10]">
-                Filtrar por
-              </p>
+      <div className="mt-7 border-t border-[#0F0F10]/08 pt-6">
+        <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#0F0F10]">
+          Filtrar por
+        </p>
 
-              <div className="mt-5">
-                <p className="text-[12px] font-semibold text-[#0F0F10]">Tamanho</p>
-                <ul className="mt-2.5 space-y-2">
-                  {sizes.map((size) => (
-                    <li key={size}>
-                      <label className="flex cursor-pointer items-center gap-2.5 text-[13px] text-[#2E2E2E]">
-                        <input
-                          type="checkbox"
-                          checked={selectedSizes.includes(size)}
-                          onChange={() => toggleSize(size)}
-                          className="h-3.5 w-3.5 accent-[#C8A96A]"
-                        />
-                        {size}
-                      </label>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+        <div className="mt-5">
+          <p className="text-[12px] font-semibold text-[#0F0F10]">Tamanho</p>
+          <ul className="mt-2.5 space-y-2">
+            {sizes.map((size) => (
+              <li key={size}>
+                <label className="flex cursor-pointer items-center gap-2.5 text-[13px] text-[#2E2E2E]">
+                  <input
+                    type="checkbox"
+                    checked={selectedSizes.includes(size)}
+                    onChange={() => toggleSize(size)}
+                    className="h-3.5 w-3.5 accent-[#C8A96A]"
+                  />
+                  {size}
+                </label>
+              </li>
+            ))}
+          </ul>
+        </div>
 
-              <div className="mt-5">
-                <p className="text-[12px] font-semibold text-[#0F0F10]">Tipo</p>
-                <ul className="mt-2.5 space-y-2">
-                  {types.map((type) => (
-                    <li key={type}>
-                      <label className="flex cursor-pointer items-center gap-2.5 text-[13px] text-[#2E2E2E]">
-                        <input
-                          type="checkbox"
-                          checked={selectedTypes.includes(type)}
-                          onChange={() => toggleType(type)}
-                          className="h-3.5 w-3.5 accent-[#C8A96A]"
-                        />
-                        {type}
-                      </label>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+        <div className="mt-5">
+          <p className="text-[12px] font-semibold text-[#0F0F10]">Tipo</p>
+          <ul className="mt-2.5 space-y-2">
+            {types.map((type) => (
+              <li key={type}>
+                <label className="flex cursor-pointer items-center gap-2.5 text-[13px] text-[#2E2E2E]">
+                  <input
+                    type="checkbox"
+                    checked={selectedTypes.includes(type)}
+                    onChange={() => toggleType(type)}
+                    className="h-3.5 w-3.5 accent-[#C8A96A]"
+                  />
+                  {type}
+                </label>
+              </li>
+            ))}
+          </ul>
+        </div>
 
-              <div className="mt-5">
-                <p className="text-[12px] font-semibold text-[#0F0F10]">Cor</p>
-                <div className="mt-2.5 flex gap-2">
-                  {colorSwatches.map((color) => (
-                    <button
-                      key={color.name}
-                      type="button"
-                      aria-label={color.name}
-                      onClick={() => setSelectedColor(color.name)}
-                      className={`h-7 w-7 rounded-md border-2 transition duration-300 ${
-                        selectedColor === color.name
-                          ? "border-[#C8A96A]"
-                          : "border-transparent"
-                      }`}
-                      style={{ background: color.hex }}
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
+        <div className="mt-5">
+          <p className="text-[12px] font-semibold text-[#0F0F10]">Cor</p>
+          <div className="mt-2.5 flex gap-2">
+            {colorSwatches.map((color) => (
+              <button
+                key={color.name}
+                type="button"
+                aria-label={color.name}
+                onClick={() => setSelectedColor(color.name)}
+                className={`h-7 w-7 rounded-md border-2 transition duration-300 ${
+                  selectedColor === color.name
+                    ? "border-[#C8A96A]"
+                    : "border-transparent"
+                }`}
+                style={{ background: color.hex }}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    </>
+  );
+
+  return (
+    <section id="nosso-catalogo" className="scroll-mt-8 w-full bg-[#F8F8F6]">
+      <div className="mx-auto max-w-[1440px] px-4 pb-12 pt-4 sm:px-8 lg:px-10 lg:pb-16 lg:pt-6">
+        <div className="grid gap-6 lg:grid-cols-[260px_1fr] lg:gap-8 xl:grid-cols-[280px_1fr] xl:gap-10">
+          {/* Sidebar desktop */}
+          <aside className="hidden h-fit rounded-[16px] bg-white p-5 shadow-[0_10px_40px_rgba(15,15,16,0.05)] lg:sticky lg:top-6 lg:block lg:p-6">
+            {filterPanel}
           </aside>
 
           {/* Conteúdo */}
@@ -508,10 +530,10 @@ export function HomeCatalogShowcase() {
                     exit={{ opacity: 0, y: -6 }}
                     transition={{ duration: 0.3 }}
                   >
-                    <h2 className="font-display text-[32px] leading-tight text-[#0F0F10] sm:text-[40px]">
+                    <h2 className="font-display text-[28px] leading-tight text-[#0F0F10] sm:text-[40px]">
                       {activeCategory?.label}
                     </h2>
-                    <p className="mt-3 text-[14px] leading-7 text-[#6B6B6B]">
+                    <p className="mt-2 text-[13px] leading-6 text-[#6B6B6B] sm:mt-3 sm:text-[14px] sm:leading-7">
                       {catalogSubtitle ||
                         categoryCopy[activeId] ||
                         "Conheça a linha Home Queen selecionada para esta categoria."}
@@ -520,19 +542,28 @@ export function HomeCatalogShowcase() {
                 </AnimatePresence>
               </div>
 
-              <label className="flex shrink-0 items-center gap-2 text-[12px] text-[#2E2E2E]">
-                <span className="text-[#6B6B6B]">Ordenar por:</span>
-                <select
-                  value={sort}
-                  onChange={(e) => setSort(e.target.value)}
-                  className="rounded-md border border-[#0F0F10]/12 bg-white px-3 py-2 text-[12px] text-[#0F0F10] outline-none transition focus:border-[#C8A96A]"
+              <div className="flex flex-col gap-2 sm:items-end">
+                <button
+                  type="button"
+                  onClick={() => setFiltersOpen(true)}
+                  className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-md border border-[#0F0F10]/15 bg-white px-4 text-[12px] font-semibold uppercase tracking-[0.08em] text-[#0F0F10] transition hover:border-[#C8A96A] lg:hidden"
                 >
-                  <option>Mais vendidos</option>
-                  <option>Menor preço</option>
-                  <option>Maior preço</option>
-                  <option>Melhor avaliação</option>
-                </select>
-              </label>
+                  Categorias e filtros
+                </button>
+                <label className="flex w-full shrink-0 items-center justify-between gap-2 text-[12px] text-[#2E2E2E] sm:w-auto sm:justify-start">
+                  <span className="text-[#6B6B6B]">Ordenar por:</span>
+                  <select
+                    value={sort}
+                    onChange={(e) => setSort(e.target.value)}
+                    className="min-w-0 flex-1 rounded-md border border-[#0F0F10]/12 bg-white px-3 py-2 text-[12px] text-[#0F0F10] outline-none transition focus:border-[#C8A96A] sm:flex-none"
+                  >
+                    <option>Mais vendidos</option>
+                    <option>Menor preço</option>
+                    <option>Maior preço</option>
+                    <option>Melhor avaliação</option>
+                  </select>
+                </label>
+              </div>
             </div>
 
             <AnimatePresence mode="wait">
@@ -542,7 +573,7 @@ export function HomeCatalogShowcase() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.3 }}
-                className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3"
+                className="mt-6 grid grid-cols-1 gap-4 sm:mt-8 sm:grid-cols-2 sm:gap-6 xl:grid-cols-3"
               >
                 {products.map((product) => (
                   <ProductCard
@@ -562,6 +593,39 @@ export function HomeCatalogShowcase() {
           </div>
         </div>
       </div>
+
+      {filtersOpen ? (
+        <div className="fixed inset-0 z-[100] lg:hidden">
+          <button
+            type="button"
+            className="absolute inset-0 bg-black/45"
+            aria-label="Fechar filtros"
+            onClick={() => setFiltersOpen(false)}
+          />
+          <div className="absolute inset-x-0 bottom-0 max-h-[85vh] overflow-y-auto rounded-t-[20px] bg-white p-5 shadow-[0_-12px_40px_rgba(15,15,16,0.2)] sm:inset-y-0 sm:left-0 sm:right-auto sm:w-[340px] sm:max-h-none sm:rounded-none sm:rounded-r-[16px]">
+            <div className="mb-4 flex items-center justify-between">
+              <p className="text-[13px] font-bold uppercase tracking-[0.12em] text-[#0F0F10]">
+                Filtros
+              </p>
+              <button
+                type="button"
+                onClick={() => setFiltersOpen(false)}
+                className="rounded-full border border-[#0F0F10]/12 px-3 py-1.5 text-[12px] font-semibold text-[#0F0F10]"
+              >
+                Fechar
+              </button>
+            </div>
+            {filterPanel}
+            <button
+              type="button"
+              onClick={() => setFiltersOpen(false)}
+              className="mt-6 inline-flex h-11 w-full items-center justify-center rounded-md bg-[#C8A96A] text-[12px] font-bold uppercase tracking-[0.1em] text-black"
+            >
+              Ver produtos
+            </button>
+          </div>
+        </div>
+      ) : null}
     </section>
   );
 }
