@@ -69,11 +69,9 @@ export function FactorySection() {
       <div className="relative mx-auto max-w-[1240px] px-6 lg:px-8">
         <div className="grid items-center gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-14">
           <div>
-            <div className="inline-flex rounded-[10px] border border-[#C5A059]/40 bg-[#0F0F10] p-2.5 shadow-[0_8px_24px_rgba(15,15,16,0.12)]">
-              <Logo className="max-h-[72px] w-[82px]" />
-            </div>
+            <Logo className="h-auto w-[160px] max-w-full object-contain sm:w-[200px] lg:w-[220px]" />
 
-            <h2 className="font-display mt-7 text-[32px] leading-tight text-[#0F0F10] sm:text-[38px]">
+            <h2 className="font-display mt-5 text-[28px] leading-tight text-[#0F0F10] sm:mt-7 sm:text-[38px]">
               {title.includes("fábrica") ? (
                 <>
                   {title.split("fábrica")[0]}
