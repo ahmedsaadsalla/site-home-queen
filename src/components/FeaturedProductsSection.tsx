@@ -81,22 +81,25 @@ export function FeaturedProductsSection() {
   });
 
   return (
-    <section id="destaques" className="bg-white pb-20 pt-10">
-      <div className="mx-auto max-w-[1240px] px-6 lg:px-8">
-        <div>
-          <h2 className="font-display text-[30px] sm:text-[34px]">
+    <section id="destaques" className="bg-white pb-12 pt-8 sm:pb-16 sm:pt-10">
+      <div className="mx-auto max-w-[1240px] lg:px-8">
+        <div className="px-5 lg:px-0">
+          <h2 className="font-display text-[24px] sm:text-[30px]">
             {isReseller ? "Destaques do atacado" : featuredTitle}
           </h2>
           {isReseller ? (
-            <p className="mt-2 text-[14px] text-[#6B6B6B]">
+            <p className="mt-1.5 text-[13px] text-[#6B6B6B] sm:mt-2 sm:text-[14px]">
               Preço de revenda e pedido mínimo por produto.
             </p>
           ) : featuredSubtitle ? (
-            <p className="mt-2 text-[14px] text-[#6B6B6B]">{featuredSubtitle}</p>
+            <p className="mt-1.5 text-[13px] text-[#6B6B6B] sm:mt-2 sm:text-[14px]">
+              {featuredSubtitle}
+            </p>
           ) : null}
         </div>
 
-        <div className="mt-8 grid grid-cols-1 gap-4 sm:mt-10 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
+        {/* Celular: carrossel horizontal · Desktop: 3 colunas */}
+        <div className="mt-6 flex gap-3 overflow-x-auto px-5 pb-2 [-ms-overflow-style:none] [scrollbar-width:none] snap-x snap-mandatory sm:mt-8 sm:gap-4 lg:grid lg:grid-cols-3 lg:gap-5 lg:overflow-visible lg:px-0 lg:pb-0 [&::-webkit-scrollbar]:hidden">
           {products.map((product) => {
             const wholesale = getWholesaleUnit(
               product.price,
@@ -110,7 +113,7 @@ export function FeaturedProductsSection() {
             return (
               <article
                 key={product.id}
-                className="group overflow-hidden rounded-[16px] border border-[#EAEAEA] bg-white shadow-[0_8px_30px_rgba(15,15,16,0.06)] transition hover:-translate-y-1 hover:shadow-[0_16px_40px_rgba(15,15,16,0.1)]"
+                className="group w-[72vw] max-w-[260px] shrink-0 snap-start overflow-hidden rounded-[14px] border border-[#EAEAEA] bg-white shadow-[0_8px_24px_rgba(15,15,16,0.06)] transition hover:-translate-y-1 hover:shadow-[0_14px_32px_rgba(15,15,16,0.1)] sm:w-[240px] lg:w-auto lg:max-w-none"
               >
                 <Link href={`/produto/${product.id}`} className="block">
                   <div className="relative aspect-[4/3] overflow-hidden bg-[#171717]">
@@ -119,50 +122,50 @@ export function FeaturedProductsSection() {
                       alt={product.name}
                       fill
                       className="object-cover transition duration-700 group-hover:scale-105"
-                      sizes="(max-width: 1024px) 100vw, 33vw"
+                      sizes="(max-width: 1024px) 72vw, 33vw"
                     />
-                    <span className="absolute left-4 top-4 rounded-full bg-[#C5A059] px-3 py-1 text-[9px] font-bold uppercase tracking-[0.12em] text-black">
+                    <span className="absolute left-2.5 top-2.5 rounded-full bg-[#C5A059] px-2.5 py-0.5 text-[8px] font-bold uppercase tracking-[0.12em] text-black sm:left-3 sm:top-3 sm:px-3 sm:py-1 sm:text-[9px]">
                       {product.badge}
                     </span>
                   </div>
-                  <div className="p-5">
+                  <div className="p-3.5 sm:p-4">
                     <div className="flex items-center gap-1 text-[#C5A059]">
-                      <IconStar className="h-3.5 w-3.5 fill-current" />
-                      <span className="text-[12px] font-semibold text-[#0F0F10]">
+                      <IconStar className="h-3 w-3 fill-current sm:h-3.5 sm:w-3.5" />
+                      <span className="text-[11px] font-semibold text-[#0F0F10] sm:text-[12px]">
                         {product.rating}
                       </span>
-                      <span className="text-[12px] text-[#6B6B6B]">
-                        ({product.reviews} avaliações)
+                      <span className="text-[10px] text-[#6B6B6B] sm:text-[12px]">
+                        ({product.reviews})
                       </span>
                     </div>
-                    <h3 className="font-display mt-3 text-[22px]">
+                    <h3 className="font-display mt-2 text-[16px] leading-snug sm:mt-2.5 sm:text-[18px]">
                       {product.name}
                     </h3>
 
                     {isReseller ? (
-                      <div className="mt-3 space-y-1">
-                        <p className="text-[12px] text-[#6B6B6B] line-through">
+                      <div className="mt-2 space-y-0.5 sm:mt-2.5">
+                        <p className="text-[11px] text-[#6B6B6B] line-through">
                           Varejo {formatBRL(product.price)}
                         </p>
-                        <p className="text-[22px] font-bold text-[#0F0F10]">
+                        <p className="text-[16px] font-bold text-[#0F0F10] sm:text-[18px]">
                           Atacado {formatBRL(wholesale)}
                         </p>
-                        <p className="text-[13px] font-semibold text-[#C5A059]">
-                          Pedido mínimo: {minQty} un.
+                        <p className="text-[11px] font-semibold text-[#C5A059] sm:text-[12px]">
+                          Mín. {minQty} un.
                         </p>
                       </div>
                     ) : (
                       <>
-                        <p className="mt-3 text-[22px] font-bold text-[#0F0F10]">
+                        <p className="mt-2 text-[16px] font-bold text-[#0F0F10] sm:mt-2.5 sm:text-[18px]">
                           {formatBRL(product.price)}
                         </p>
-                        <p className="mt-1 text-[12px] text-[#6B6B6B]">
+                        <p className="mt-0.5 text-[11px] text-[#6B6B6B]">
                           10x de {formatBRL(Math.round(product.price / 10))}
                         </p>
                       </>
                     )}
 
-                    <span className="mt-5 inline-flex w-full items-center justify-center rounded-md bg-[#C5A059] px-4 py-3 text-[11px] font-bold uppercase tracking-[0.12em] text-black transition group-hover:bg-[#d4b06a]">
+                    <span className="mt-3 inline-flex w-full items-center justify-center rounded-md bg-[#C5A059] px-3 py-2.5 text-[10px] font-bold uppercase tracking-[0.12em] text-black transition group-hover:bg-[#d4b06a] sm:mt-4 sm:py-2.5 sm:text-[11px]">
                       {isReseller ? "Comprar no atacado" : "Comprar"}
                     </span>
                   </div>
