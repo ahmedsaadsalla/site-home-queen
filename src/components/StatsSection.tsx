@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import {
   IconBadge,
   IconPackage,
@@ -10,6 +10,7 @@ import {
 } from "@/components/icons";
 import type { SiteStatItem } from "@/data/admin";
 
+/** Quatro números fixos — sem “Produtos fabricados” (melhor em celular / netbook) */
 const DEFAULT_STATS: SiteStatItem[] = [
   {
     id: "clientes",
@@ -17,13 +18,6 @@ const DEFAULT_STATS: SiteStatItem[] = [
     suffix: "+",
     label: "Clientes atendidos",
     icon: "users",
-  },
-  {
-    id: "produtos",
-    value: 280000,
-    suffix: "+",
-    label: "Produtos fabricados",
-    icon: "package",
   },
   {
     id: "entregas",
@@ -47,6 +41,21 @@ const DEFAULT_STATS: SiteStatItem[] = [
     icon: "stars",
   },
 ];
+
+function isProdutosFabricados(stat: SiteStatItem) {
+  const id = (stat.id || "").toLowerCase();
+  const label = (stat.label || "").toLowerCase();
+  return (
+    id === "produtos" ||
+    id.includes("produto") ||
+    label.includes("produtos fabricados") ||
+    (stat.icon === "package" && label.includes("produto"))
+  );
+}
+
+function normalizeStats(list: SiteStatItem[]) {
+  return list.filter((s) => !isProdutosFabricados(s)).slice(0, 4);
+}
 
 function iconFor(kind: SiteStatItem["icon"]): ReactNode {
   if (kind === "users") return <IconUsers className="h-10 w-10" />;
@@ -105,15 +114,15 @@ function StatCard({
 
   return (
     <article
-      className={`flex w-[152px] shrink-0 snap-start flex-col rounded-[14px] border border-[#C5A059]/15 bg-white px-3.5 py-3.5 shadow-[0_8px_30px_rgba(15,15,16,0.08)] transition-all duration-700 sm:w-[168px] lg:w-auto lg:min-h-[110px] lg:px-4 ${
+      className={`flex min-h-[100px] w-full flex-col rounded-[14px] border border-[#C5A059]/15 bg-white px-3.5 py-3.5 shadow-[0_8px_30px_rgba(15,15,16,0.08)] transition-all duration-700 sm:min-h-[110px] sm:px-4 ${
         active ? "translate-y-0 opacity-100 scale-100" : "translate-y-6 opacity-0 scale-95"
       }`}
       style={{ transitionDelay: `${delay}ms` }}
     >
-      <div className="mb-2 text-[#C5A059] [&_svg]:h-7 [&_svg]:w-7 sm:[&_svg]:h-8 sm:[&_svg]:w-8 lg:[&_svg]:h-10 lg:[&_svg]:w-10">
+      <div className="mb-2 text-[#C5A059] [&_svg]:h-7 [&_svg]:w-7 sm:[&_svg]:h-8 sm:[&_svg]:w-8 lg:[&_svg]:h-9 lg:[&_svg]:w-9">
         {icon}
       </div>
-      <p className="text-[26px] font-bold leading-none tracking-tight text-[#0F0F10] sm:text-[30px] lg:text-[36px]">
+      <p className="text-[24px] font-bold leading-none tracking-tight text-[#0F0F10] sm:text-[28px] lg:text-[32px]">
         {count.toLocaleString("pt-BR")}
         {suffix}
       </p>
@@ -133,20 +142,24 @@ export function StatsSection({
 }) {
   const ref = useRef<HTMLElement>(null);
   const [active, setActive] = useState(false);
-  const [stats, setStats] = useState<SiteStatItem[]>(statsProp || DEFAULT_STATS);
+  const [stats, setStats] = useState<SiteStatItem[]>(() =>
+    normalizeStats(statsProp?.length ? statsProp : DEFAULT_STATS),
+  );
   const [title, setTitle] = useState(
     titleProp || "Nossos números falam por nós",
   );
 
+  const visibleStats = useMemo(() => normalizeStats(stats), [stats]);
+
   useEffect(() => {
     if (statsProp?.length) {
-      setStats(statsProp);
+      setStats(normalizeStats(statsProp));
       return;
     }
     void fetch("/api/cms")
       .then((r) => r.json())
       .then((cms) => {
-        if (cms?.home?.stats?.length) setStats(cms.home.stats);
+        if (cms?.home?.stats?.length) setStats(normalizeStats(cms.home.stats));
         if (cms?.home?.statsTitle) setTitle(cms.home.statsTitle);
       })
       .catch(() => undefined);
@@ -173,12 +186,13 @@ export function StatsSection({
 
   return (
     <section id="numeros" ref={ref} className="scroll-mt-8 bg-[#F5F5F3] pb-5 pt-6">
-      <div className="mx-auto max-w-[1240px] lg:px-8">
-        <p className="px-6 text-center font-display text-[18px] italic text-[#C5A059] sm:text-[20px] lg:px-0">
+      <div className="mx-auto max-w-[1240px] px-6 lg:px-8">
+        <p className="text-center font-display text-[18px] italic text-[#C5A059] sm:text-[20px]">
           {title}
         </p>
-        <div className="mt-5 flex gap-3 overflow-x-auto px-6 pb-1 [-ms-overflow-style:none] [scrollbar-width:none] snap-x snap-mandatory lg:grid lg:grid-cols-5 lg:gap-3 lg:overflow-visible lg:px-0 lg:pb-0 [&::-webkit-scrollbar]:hidden">
-          {stats.map((stat, index) => (
+        {/* 2x2 no celular/netbook · 4 em linha no desktop */}
+        <div className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
+          {visibleStats.map((stat, index) => (
             <StatCard
               key={stat.id || stat.label}
               value={stat.value}
