@@ -114,23 +114,23 @@ export function SiteFooter() {
     >
       {/* Faixa de benefícios */}
       <div
-        className="relative border-b border-[#C8A96A]/15"
+        className="relative border-b border-[#C8A96A]/25"
         style={{ backgroundColor: "#0F0F10" }}
       >
-        <div className="mx-auto flex h-20 max-w-[1240px] items-center px-6 lg:px-8">
-          <ul className="flex w-full flex-wrap items-center justify-between gap-x-6 gap-y-2">
+        <div className="mx-auto max-w-[1240px] px-5 py-6 sm:px-6 sm:py-7 lg:px-8 lg:py-8">
+          <ul className="grid grid-cols-2 gap-x-3 gap-y-5 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-6 lg:grid-cols-4 lg:gap-x-4 lg:gap-y-0">
             {benefits.map((item) => (
               <li
                 key={item.label}
-                className="flex min-w-[140px] flex-1 items-center justify-center gap-3 text-center sm:justify-start sm:text-left"
+                className="flex items-center gap-2.5 sm:gap-3"
               >
                 <span
-                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#C8A96A]/40 text-[#C8A96A]"
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#C8A96A]/45 text-[#C8A96A] sm:h-10 sm:w-10"
                   aria-hidden
                 >
                   {item.icon}
                 </span>
-                <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#F8F8F6]/85">
+                <span className="min-w-0 text-left text-[10px] font-semibold uppercase leading-snug tracking-[0.06em] text-[#C8A96A] sm:text-[11px] sm:tracking-[0.08em]">
                   {item.label}
                 </span>
               </li>
