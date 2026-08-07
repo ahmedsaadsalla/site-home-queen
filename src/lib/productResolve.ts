@@ -68,7 +68,14 @@ export async function resolveStoreProduct(
   const key = decodeURIComponent(param).trim();
   if (!key) return null;
 
-  const catalog = await readAdminCatalog();
+  let catalog;
+  try {
+    catalog = await readAdminCatalog();
+  } catch (e) {
+    console.error("[resolveStoreProduct] catalog", e);
+    catalog = { products: [], categories: [], brands: [], updatedAt: "" };
+  }
+
   const admin =
     catalog.products.find(
       (p) =>

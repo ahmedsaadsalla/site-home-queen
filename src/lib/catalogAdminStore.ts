@@ -124,20 +124,100 @@ async function ensureCatalogSeeded() {
   }
 }
 
-export async function readAdminCatalog(): Promise<AdminCatalog> {
-  await ensureCatalogSeeded();
-  const [categories, products, brands] = await Promise.all([
-    prisma.category.findMany({ orderBy: { order: "asc" } }),
-    prisma.product.findMany({ orderBy: { order: "asc" } }),
-    prisma.brand.findMany({ orderBy: { name: "asc" } }),
-  ]);
+/** Catálogo estático quando o banco está indisponível (ex.: DATABASE_URL ausente). */
+export function fallbackAdminCatalog(): AdminCatalog {
+  const ts = now();
+  const categories: AdminCategory[] = homeCatalogConfig.categories
+    .filter((c) => c.id !== "todos")
+    .map((c, i) => ({
+      id: c.id,
+      name: c.label,
+      slug: c.id,
+      banner: "",
+      icon: "",
+      image: "",
+      order: c.order ?? i + 1,
+      parentId: null,
+      description: "",
+      seoTitle: `${c.label} | Home Queen`,
+      seoDescription: `Confira ${c.label} Home Queen.`,
+      seoKeywords: c.label.toLowerCase(),
+      ogImage: "",
+      indexable: true,
+      minQty: 3,
+      active: c.visible,
+      createdAt: ts,
+      updatedAt: ts,
+      deletedAt: null,
+    }));
+
+  const products: AdminProduct[] = homeCatalogConfig.products.map((p) => ({
+    id: p.id,
+    name: p.name,
+    slug: slugify(p.name) || p.id,
+    sku: `HQ-${p.id.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 12)}`,
+    code: `COD-${p.order.toString().padStart(4, "0")}`,
+    categoryId: p.categoryId,
+    brand: "Home Queen",
+    image: p.image,
+    cover: p.image,
+    gallery: [p.image],
+    wholesaleImage: "",
+    wholesaleCover: "",
+    wholesaleGallery: [],
+    video: "",
+    colors: [
+      { name: "Preto", hex: "#1A1A1A" },
+      { name: "Bege", hex: "#C8B89A" },
+    ],
+    defaultColor: "Preto",
+    retailPrice: p.price,
+    wholesalePrice: Math.round(p.price * 0.72),
+    minQty: 3,
+    stock: 20 + (p.order % 15),
+    active: true,
+    featured: p.featured,
+    promotion: p.badge === "Promoção",
+    launch: p.badge === "Novo",
+    description: "",
+    seoTitle: `${p.name} | Home Queen`,
+    seoDescription: p.name,
+    seoKeywords: "",
+    ogImage: p.image,
+    indexable: true,
+    order: p.order,
+    createdAt: ts,
+    updatedAt: ts,
+    deletedAt: null,
+  }));
 
   return {
-    categories: categories.map(categoryToAdmin),
-    products: products.map(productToAdmin),
-    brands: brands.map((b) => b.name),
-    updatedAt: now(),
+    categories,
+    products,
+    brands: ["Home Queen", "Ortobom", "Castor", "Outros"],
+    updatedAt: ts,
   };
+}
+
+export async function readAdminCatalog(): Promise<AdminCatalog> {
+  try {
+    await ensureCatalogSeeded();
+    const [categories, products, brands] = await Promise.all([
+      prisma.category.findMany({ orderBy: { order: "asc" } }),
+      prisma.product.findMany({ orderBy: { order: "asc" } }),
+      prisma.brand.findMany({ orderBy: { name: "asc" } }),
+    ]);
+
+    return {
+      categories: categories.map(categoryToAdmin),
+      products: products.map(productToAdmin),
+      brands: brands.map((b) => b.name),
+      updatedAt: now(),
+    };
+  } catch (e) {
+    console.error("[readAdminCatalog]", e);
+    return fallbackAdminCatalog();
+  }
 }
 
 export async function writeAdminCatalog(catalog: AdminCatalog) {
