@@ -6,6 +6,7 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   compress: true,
   poweredByHeader: false,
+  serverExternalPackages: ["pg", "@prisma/adapter-pg"],
   images: {
     formats: ["image/avif", "image/webp"],
     remotePatterns: [
