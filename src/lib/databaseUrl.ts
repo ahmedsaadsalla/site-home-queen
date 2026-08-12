@@ -1,53 +1,79 @@
 /**
- * Monta DATABASE_URL para Prisma/Postgres.
- * - Remove aspas que o Hostinger às vezes inclui
- * - Injeta DATABASE_PASSWORD em texto puro (o # na URL quebra o parse)
- * - Corrige o host do pooler aws-0 → aws-1
- * - Usa porta 5432 (session). A 6543 costuma dar timeout no Hostinger.
+ * Conexão Postgres para Prisma/Hostinger.
+ * Senha com "#" não pode ir só na URI — o Hostinger corta o restante.
  */
 function stripEnv(value: string | undefined) {
   return (value || "").trim().replace(/^["']+|["']+$/g, "");
 }
 
-export function getDatabaseUrl(): string {
-  let base = stripEnv(process.env.DATABASE_URL);
-  const plainPassword = stripEnv(process.env.DATABASE_PASSWORD);
-  if (!base) return "";
+function decodePassword(value: string) {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
 
-  base = base.replace(
+export type PgConfig = {
+  host: string;
+  port: number;
+  user: string;
+  password: string;
+  database: string;
+  ssl: { rejectUnauthorized: boolean };
+};
+
+export function getPgConfig(): PgConfig | null {
+  const base = stripEnv(process.env.DATABASE_URL);
+  if (!base) return null;
+
+  let host = "";
+  let port = 5432;
+  let user = "postgres";
+  let password = "";
+  let database = "postgres";
+
+  try {
+    const parsed = new URL(base.replace(/^postgresql:/i, "http:"));
+    host = parsed.hostname;
+    port = Number(parsed.port || "5432");
+    user = decodeURIComponent(parsed.username || "postgres");
+    password = decodeURIComponent(parsed.password || "");
+    database = (parsed.pathname || "/postgres").replace(/^\//, "") || "postgres";
+  } catch {
+    return null;
+  }
+
+  const fromEnv = decodePassword(stripEnv(process.env.DATABASE_PASSWORD));
+  if (fromEnv) password = fromEnv;
+
+  host = host.replace(
     "aws-0-us-west-2.pooler.supabase.com",
     "aws-1-us-west-2.pooler.supabase.com",
   );
+  if (port === 6543) port = 5432;
 
-  if (base.includes(":6543")) {
-    base = base
-      .replace(":6543", ":5432")
-      .replace("pgbouncer=true&", "")
-      .replace("&pgbouncer=true", "")
-      .replace("?pgbouncer=true", "");
-  }
+  if (!host || !password) return null;
+  return {
+    host,
+    port,
+    user,
+    password,
+    database,
+    ssl: { rejectUnauthorized: false },
+  };
+}
 
-  if (!plainPassword) return base;
-
-  const encoded = encodeURIComponent(plainPassword);
-  return base.replace(
-    /^(postgresql:\/\/[^:/?#]+:)([^@]*)(@)/i,
-    `$1${encoded}$3`,
-  );
+export function getDatabaseUrl(): string {
+  const cfg = getPgConfig();
+  if (!cfg) return stripEnv(process.env.DATABASE_URL);
+  const pass = encodeURIComponent(cfg.password);
+  const user = encodeURIComponent(cfg.user);
+  return `postgresql://${user}:${pass}@${cfg.host}:${cfg.port}/${cfg.database}?sslmode=require`;
 }
 
 export function getDatabaseHostInfo() {
-  const url = getDatabaseUrl();
-  if (!url) return { host: "", port: "", user: "" };
-  try {
-    const u = new URL(url.replace(/^postgresql:/, "http:"));
-    return {
-      host: u.hostname,
-      port: u.port,
-      user: decodeURIComponent(u.username || ""),
-    };
-  } catch {
-    const m = url.match(/@([^/:?]+):?(\d+)?/);
-    return { host: m?.[1] || "", port: m?.[2] || "", user: "" };
-  }
+  const cfg = getPgConfig();
+  if (!cfg) return { host: "", port: "", user: "" };
+  return { host: cfg.host, port: String(cfg.port), user: cfg.user };
 }
