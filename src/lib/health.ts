@@ -27,10 +27,12 @@ async function checkDatabase() {
       status: "connected" as const,
       latencyMs: Date.now() - t0,
       ok: true,
+      error: "",
     };
   } catch (e) {
+    const message = e instanceof Error ? e.message : "DB offline";
     await logSystemError({
-      message: e instanceof Error ? e.message : "DB offline",
+      message,
       source: "postgresql",
       severity: "critical",
       stack: e instanceof Error ? e.stack : null,
@@ -39,6 +41,7 @@ async function checkDatabase() {
       status: "offline" as const,
       latencyMs: Date.now() - t0,
       ok: false,
+      error: message.replace(/postgresql:\/\/[^@]+@/gi, "postgresql://***@").slice(0, 280),
     };
   }
 }
@@ -202,6 +205,7 @@ export async function runHealthCheck() {
     version: version?.version || "1.0.0",
     uptimeMs: getUptimeMs(),
     databaseLatencyMs: database.latencyMs,
+    databaseError: "error" in database ? database.error : "",
     databaseTarget: getDatabaseHostInfo(),
     timestamp: new Date().toISOString(),
   };
