@@ -1,18 +1,45 @@
 /**
- * Monta DATABASE_URL com senha em texto puro (evita problemas com # na URL no Hostinger).
- * Defina DATABASE_PASSWORD no painel; a senha na URL pode ser placeholder.
+ * Monta DATABASE_URL para Prisma/Postgres.
+ * - Remove aspas que o Hostinger às vezes inclui
+ * - Injeta DATABASE_PASSWORD em texto puro (o # na URL quebra o parse)
+ * - Corrige o host do pooler aws-0 → aws-1 (IPv4 do projeto Home Queen)
  */
+function stripEnv(value: string | undefined) {
+  return (value || "").trim().replace(/^["']+|["']+$/g, "");
+}
+
 export function getDatabaseUrl(): string {
-  const base = (process.env.DATABASE_URL || "").trim();
-  const plainPassword = (process.env.DATABASE_PASSWORD || "").trim();
+  let base = stripEnv(process.env.DATABASE_URL);
+  const plainPassword = stripEnv(process.env.DATABASE_PASSWORD);
   if (!base) return "";
+
+  base = base.replace(
+    "aws-0-us-west-2.pooler.supabase.com",
+    "aws-1-us-west-2.pooler.supabase.com",
+  );
+
   if (!plainPassword) return base;
 
+  const encoded = encodeURIComponent(plainPassword);
+  const replaced = base.replace(
+    /^(postgresql:\/\/[^:/?#]+:)([^@]*)(@)/i,
+    `$1${encoded}$3`,
+  );
+  return replaced;
+}
+
+export function getDatabaseHostInfo() {
+  const url = getDatabaseUrl();
+  if (!url) return { host: "", port: "", user: "" };
   try {
-    const url = new URL(base);
-    url.password = plainPassword;
-    return url.toString();
+    const u = new URL(url.replace(/^postgresql:/, "http:"));
+    return {
+      host: u.hostname,
+      port: u.port,
+      user: decodeURIComponent(u.username || ""),
+    };
   } catch {
-    return base;
+    const m = url.match(/@([^/:?]+):?(\d+)?/);
+    return { host: m?.[1] || "", port: m?.[2] || "", user: "" };
   }
 }

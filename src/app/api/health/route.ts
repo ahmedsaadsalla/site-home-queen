@@ -11,10 +11,12 @@ export async function GET() {
       health.status === "ok" ? 200 : health.status === "warning" ? 200 : 503;
     return NextResponse.json(health, { status: http });
   } catch (e) {
+    const { getDatabaseHostInfo } = await import("@/lib/databaseUrl");
     return NextResponse.json(
       {
         status: "error",
         message: e instanceof Error ? e.message : "Health check falhou",
+        databaseTarget: getDatabaseHostInfo(),
         timestamp: new Date().toISOString(),
       },
       { status: 503 },

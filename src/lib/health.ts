@@ -4,6 +4,7 @@ import os from "os";
 import { prisma } from "@/lib/prisma";
 import { env } from "@/lib/env";
 import { getCurrentVersion } from "@/lib/systemSettings";
+import { getDatabaseHostInfo } from "@/lib/databaseUrl";
 import { logSystemError } from "@/lib/systemErrors";
 import { sampleCpuPercent } from "@/lib/cpuSample";
 
@@ -165,7 +166,7 @@ export async function runHealthCheck() {
     checkSmtp(),
     checkBling(),
     diskStats(),
-    getCurrentVersion(),
+    getCurrentVersion().catch(() => null),
   ]);
 
   const mem = process.memoryUsage();
@@ -201,6 +202,7 @@ export async function runHealthCheck() {
     version: version?.version || "1.0.0",
     uptimeMs: getUptimeMs(),
     databaseLatencyMs: database.latencyMs,
+    databaseTarget: getDatabaseHostInfo(),
     timestamp: new Date().toISOString(),
   };
 }
