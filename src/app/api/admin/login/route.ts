@@ -74,10 +74,17 @@ export async function POST(request: Request) {
       maxAge: 60 * 60,
     });
     return res;
-  } catch {
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : "";
+    const dbDown =
+      /database|prisma|postgres|authentication failed|can't reach/i.test(msg);
     return NextResponse.json(
-      { error: "Usuário ou senha inválidos." },
-      { status: 500 },
+      {
+        error: dbDown
+          ? "Banco de dados indisponível. Verifique DATABASE_URL no Hostinger."
+          : "Usuário ou senha inválidos.",
+      },
+      { status: dbDown ? 503 : 500 },
     );
   }
 }
