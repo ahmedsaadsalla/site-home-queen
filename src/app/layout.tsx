@@ -94,7 +94,7 @@ export default async function RootLayout({
 }>) {
   const cms = await readAdminCms();
   const phone = cms.integrations?.whatsapp?.number;
-  const logo = cms.home?.logo || "/hero-home-queen.jpg";
+  const logo = "/logo-home-queen.png";
   const hdrs = await headers();
   const maintenance = hdrs.get("x-hq-maintenance") === "1";
 

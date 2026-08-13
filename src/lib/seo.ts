@@ -260,7 +260,7 @@ export function organizationJsonLd(opts?: {
     "@type": "Organization",
     name: SITE_NAME,
     url: getSiteUrl(),
-    logo: absoluteUrl(opts?.logo || "/hero-home-queen.jpg"),
+    logo: absoluteUrl(opts?.logo || "/logo-home-queen.png"),
     ...(opts?.phone
       ? {
           contactPoint: {
