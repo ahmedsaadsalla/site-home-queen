@@ -77,7 +77,7 @@ export function FactorySection() {
               style={{ backgroundColor: BANNER }}
             >
               <Image
-                src="/logo-home-queen-fabrica.png"
+                src="/logo-home-queen.png"
                 alt="Home Queen Camas Box"
                 width={280}
                 height={180}
