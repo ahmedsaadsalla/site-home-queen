@@ -204,16 +204,17 @@ export function SiteHeader() {
 
   return (
     <header className="relative z-[80] border-b border-white/5 bg-black">
-      <div className="mx-auto grid h-[58px] max-w-[1240px] grid-cols-[auto_1fr_auto] items-center gap-2 overflow-hidden px-3 sm:h-[64px] sm:gap-4 sm:px-4 lg:gap-6 lg:px-6">
+      <div className="mx-auto grid max-w-[1240px] grid-cols-[auto_1fr_auto] items-center gap-2 px-3 py-2 sm:gap-4 sm:px-4 sm:py-2.5 lg:gap-6 lg:px-6">
         {/* Logo */}
         <a
           href="/"
-          className="relative h-[44px] w-[130px] shrink-0 overflow-hidden sm:h-[50px] sm:w-[200px] lg:w-[220px]"
+          className="block w-[130px] shrink-0 sm:w-[200px] lg:w-[220px]"
           aria-label="Home Queen"
         >
           <Logo
             priority
-            className="absolute left-0 top-1/2 w-full -translate-y-[48%] object-contain sm:scale-[1.08]"
+            src="/logo-home-queen-header.png"
+            className="h-auto w-full"
           />
         </a>
 
