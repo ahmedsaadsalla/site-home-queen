@@ -11,7 +11,7 @@ export function Logo({ className = "", priority = false }: LogoProps) {
       src="/logo-home-queen.png"
       alt="Home Queen Camas Box"
       width={220}
-      height={220}
+      height={147}
       priority={priority}
       className={`object-contain ${className}`}
     />
