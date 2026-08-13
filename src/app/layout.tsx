@@ -50,11 +50,7 @@ export async function generateMetadata(): Promise<Metadata> {
       : ["cama box", "Home Queen", "colchão", "baú"],
     icons: {
       icon: [
-        ...(cms.home?.favicon &&
-        cms.home.favicon !== "/favicon.ico" &&
-        cms.home.favicon !== "/favicon-48.png"
-          ? [{ url: cms.home.favicon }]
-          : []),
+        { url: "/logo-home-queen.png", type: "image/png" },
         { url: "/favicon.ico", sizes: "48x48", type: "image/x-icon" },
         { url: "/favicon-48.png", sizes: "48x48", type: "image/png" },
         { url: "/favicon-96.png", sizes: "96x96", type: "image/png" },
