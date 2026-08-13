@@ -300,7 +300,7 @@ export const defaultAdminCms = (): AdminCms => ({
     partnersEnabled: true,
     footerNote: "Home Queen Camas Box — conforto premium",
     logo: "",
-    favicon: "/logo-home-queen.png",
+    favicon: "/favicon.ico",
     partnersLogos: [],
     partnersTitle: "Marcas e parceiros",
     testimonialPhotos: [],
