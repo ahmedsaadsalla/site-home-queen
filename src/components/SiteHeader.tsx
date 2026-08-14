@@ -208,16 +208,14 @@ export function SiteHeader() {
         {/* Logo */}
         <a
           href="/"
-          className="block w-[130px] shrink-0 sm:w-[200px] lg:w-[220px]"
+          className="flex w-[130px] shrink-0 items-center sm:w-[200px] lg:w-[220px]"
           aria-label="Home Queen"
         >
-          <div className="flex h-[48px] items-center justify-center overflow-hidden sm:h-[54px]">
-            <Logo
-              priority
-              src="/logo-home-queen-header.png"
-              className="w-full origin-center scale-y-[0.74]"
-            />
-          </div>
+          <Logo
+            priority
+            src="/logo-home-queen-header.png"
+            className="h-[58px] w-full object-contain object-center sm:h-[66px] lg:h-[72px]"
+          />
         </a>
 
         {/* Menu central */}
