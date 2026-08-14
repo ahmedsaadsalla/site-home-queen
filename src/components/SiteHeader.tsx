@@ -204,7 +204,7 @@ export function SiteHeader() {
 
   return (
     <header className="relative z-[80] border-b border-white/5 bg-black">
-      <div className="mx-auto grid max-w-[1240px] grid-cols-[auto_1fr_auto] items-center gap-2 px-3 py-1.5 sm:gap-4 sm:px-4 sm:py-2 lg:gap-6 lg:px-6">
+      <div className="mx-auto grid max-w-[1240px] grid-cols-[auto_1fr_auto] items-center gap-2 px-3 py-1 sm:gap-4 sm:px-4 sm:py-1.5 lg:gap-6 lg:px-6">
         {/* Logo */}
         <a
           href="/"
@@ -214,7 +214,7 @@ export function SiteHeader() {
           <Logo
             priority
             src="/logo-home-queen-header.png"
-            className="block h-auto w-full origin-center scale-y-[0.86] -my-[8%]"
+            className="block h-auto w-full origin-center scale-y-[0.74] -my-[13%]"
           />
         </a>
 
