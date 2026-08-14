@@ -50,13 +50,13 @@ export async function generateMetadata(): Promise<Metadata> {
       : ["cama box", "Home Queen", "colchão", "baú"],
     icons: {
       icon: [
-        { url: "/favicon.ico", sizes: "48x48", type: "image/x-icon" },
-        { url: "/favicon-48.png", sizes: "48x48", type: "image/png" },
-        { url: "/favicon-96.png", sizes: "96x96", type: "image/png" },
-        { url: "/favicon-192.png", sizes: "192x192", type: "image/png" },
+        { url: "/favicon-48.png?v=2", sizes: "48x48", type: "image/png" },
+        { url: "/favicon-96.png?v=2", sizes: "96x96", type: "image/png" },
+        { url: "/favicon-192.png?v=2", sizes: "192x192", type: "image/png" },
+        { url: "/favicon.ico?v=2", sizes: "48x48", type: "image/x-icon" },
       ],
-      shortcut: "/favicon.ico",
-      apple: [{ url: "/apple-touch-icon.png", sizes: "180x180" }],
+      shortcut: "/favicon-48.png?v=2",
+      apple: [{ url: "/apple-touch-icon.png?v=2", sizes: "180x180" }],
     },
     openGraph: {
       type: "website",
@@ -93,7 +93,7 @@ export default async function RootLayout({
 }>) {
   const cms = await readAdminCms();
   const phone = cms.integrations?.whatsapp?.number;
-  const logo = "/logo-home-queen.png";
+  const logo = "/logo-home-queen-transparent.png";
   const hdrs = await headers();
   const maintenance = hdrs.get("x-hq-maintenance") === "1";
 
