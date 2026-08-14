@@ -299,10 +299,16 @@ export function SiteFooter() {
           </p>
         </div>
 
-        <p className="mt-5 text-center text-[11px] text-white/40">
-          © {new Date().getFullYear()} Home Queen Camas Box. Todos os direitos
-          reservados.
-        </p>
+        <div className="mt-5 flex flex-col gap-3 text-[11px] text-white/45 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
+          <div className="text-left leading-5">
+            <p>Home Queen LTDA</p>
+            <p>CNPJ: 47.139.440/0001-49</p>
+          </div>
+          <p className="text-left sm:text-right">
+            © {new Date().getFullYear()} Home Queen Camas Box. Todos os direitos
+            reservados.
+          </p>
+        </div>
       </div>
     </footer>
   );
