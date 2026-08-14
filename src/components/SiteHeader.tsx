@@ -204,18 +204,20 @@ export function SiteHeader() {
 
   return (
     <header className="relative z-[80] border-b border-white/5 bg-black">
-      <div className="mx-auto grid max-w-[1240px] grid-cols-[auto_1fr_auto] items-center gap-2 px-3 py-1 sm:gap-4 sm:px-4 sm:py-1.5 lg:gap-6 lg:px-6">
+      <div className="mx-auto grid max-w-[1240px] grid-cols-[auto_1fr_auto] items-center gap-2 px-3 py-2 sm:gap-4 sm:px-4 sm:py-2.5 lg:gap-6 lg:px-6">
         {/* Logo */}
         <a
           href="/"
           className="block w-[130px] shrink-0 sm:w-[200px] lg:w-[220px]"
           aria-label="Home Queen"
         >
-          <Logo
-            priority
-            src="/logo-home-queen-header.png"
-            className="block h-auto w-full origin-center scale-y-[0.74] -my-[13%]"
-          />
+          <div className="flex h-[48px] items-center justify-center overflow-hidden sm:h-[54px]">
+            <Logo
+              priority
+              src="/logo-home-queen-header.png"
+              className="w-full origin-center scale-y-[0.74]"
+            />
+          </div>
         </a>
 
         {/* Menu central */}
