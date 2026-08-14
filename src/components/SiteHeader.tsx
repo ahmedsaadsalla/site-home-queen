@@ -208,13 +208,13 @@ export function SiteHeader() {
         {/* Logo */}
         <a
           href="/"
-          className="flex w-[130px] shrink-0 items-center sm:w-[200px] lg:w-[220px]"
+          className="flex w-[150px] shrink-0 items-center justify-center sm:w-[230px] lg:w-[250px]"
           aria-label="Home Queen"
         >
           <Logo
             priority
             src="/logo-home-queen-header.png"
-            className="h-[58px] w-full object-contain object-center sm:h-[66px] lg:h-[72px]"
+            className="h-[58px] w-full origin-center scale-x-[1.28] object-contain object-center sm:h-[66px] sm:scale-x-[1.35] lg:h-[72px] lg:scale-x-[1.38]"
           />
         </a>
 
